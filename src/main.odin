@@ -6,7 +6,7 @@ main :: proc() {
     screenWidth :: 800
     screenHeight :: 450
 
-    raylib.InitWindow(screenWidth, screenHeight, "raylib [text] example - font loading")
+    raylib.InitWindow(screenWidth, screenHeight, "Pokerthor - Poker home game manager and tracker")
 
     raylib.SetTargetFPS(60)
 
