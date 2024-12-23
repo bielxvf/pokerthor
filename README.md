@@ -1,2 +1,2 @@
 # Pokerthor
-## Poker home game manager and tracker
+Poker home game manager and tracker
