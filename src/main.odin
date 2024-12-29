@@ -1,89 +1,47 @@
 package main
 
 import rl "vendor:raylib"
-import rw "raywrap"
 
-WindowState :: enum {
-    Menu,
+State :: enum {
+    MainMenu,
     NewDatabase,
-    DatabaseOptions,
 }
 
 main :: proc() {
     screenWidth :: 1920 * 2 / 3
     screenHeight :: 1080 * 2 / 3
-
     rl.InitWindow(screenWidth, screenHeight, "Pokerthor - Poker home game manager and tracker")
     defer rl.CloseWindow()
-
     rl.SetTargetFPS(60)
 
-    font := rl.LoadFontEx("/usr/share/fonts/TTF/DejaVuSans.ttf", 45, nil, 0)
-    defer rl.UnloadFont(font)
-
-
-    state: WindowState = WindowState.Menu
-
-    btn_new_database: rw.Button = {
-	font,
-	"New database",
-	rl.Vector2{screenWidth * 1 / 6, screenHeight * 1 / 4},
-	25,
-	2,
-	rl.BLACK,
-	25/3,
-	rl.GREEN,
-    }
-
-    /* TODO: Scan for .json databases in ~/.config/pokerthor/ */
-    /* Database idea: folder named X is the database, contains global.json with the global P&L, and history.json with all sessions */
+    windowState: State = State.MainMenu
+    title_text: cstring = "Main Menu"
+    font_size := rl.GetFontDefault().baseSize
 
     for !rl.WindowShouldClose() {
-
-	/* ---- STATE ---- */
-
-	switch state {
-	case WindowState.Menu:
-	    if rw.ButtonIsClicked(btn_new_database, rl.MouseButton.LEFT) {
-		state = WindowState.NewDatabase
-		continue
-	    }
-	case WindowState.NewDatabase:
-	case WindowState.DatabaseOptions:
-	}
-
-
-	/* ---- DRAWING  ---- */
         rl.BeginDrawing()
-
         rl.ClearBackground(rl.RAYWHITE)
 
-	switch state {
-	case WindowState.Menu:
-	    /* Title */
-	    rw.DrawTextExCentered(font,
-				  "Pokerthor",
-				  rl.Vector2{screenWidth / 2, screenHeight * 1 / 12},
-				  50,
-				  2,
-				  rl.BLACK)
+	rl.DrawLineEx(rl.Vector2{0, 0}, rl.Vector2{screenWidth, 0}, 30.0, rl.LIGHTGRAY)
+	rl.DrawLineEx(rl.Vector2{screenWidth, 0}, rl.Vector2{screenWidth, screenHeight}, 30.0, rl.LIGHTGRAY)
+	rl.DrawLineEx(rl.Vector2{screenWidth, screenHeight}, rl.Vector2{0, screenHeight}, 30.0, rl.LIGHTGRAY)
+	rl.DrawLineEx(rl.Vector2{0, screenHeight}, rl.Vector2{0, 0}, 30.0, rl.LIGHTGRAY)
 
-	    /* New database button */
-	    rw.DrawButtonExCentered(btn_new_database)
+	/* TODO: Use different font */
+	switch windowState {
+	case State.MainMenu:
 
-	    /* Subtitle */
-	    rw.DrawTextExCentered(font,
-				  "Click on a database for options",
-				  rl.Vector2{screenWidth / 2, screenHeight * 1 / 6},
-				  30,
-				  2,
-				  rl.GRAY)
+	    text_width: f32 = cast(f32) rl.MeasureText(title_text, font_size)
+	    text_height: f32 = cast(f32) font_size
+	    x: f32 = (screenWidth - text_width) / 2
+	    y: f32 = cast(f32) screenHeight * 1 / 8
 
-	    /* TODO: Show databases, allow rightclick for options */
+	    rl.GuiLabel(rl.Rectangle{x, y, text_width, text_height}, title_text)
 
-	case WindowState.NewDatabase:
-	    /* TODO */
-	case WindowState.DatabaseOptions:
+	    if rl.GuiButton(rl.Rectangle{(screenWidth - 120) / 2, (screenHeight - 30) / 2 - 30, 120, 30}, "New Database") {
+		windowState = State.NewDatabase
+	    }
+	case State.NewDatabase:
 	}
 
         rl.EndDrawing()
